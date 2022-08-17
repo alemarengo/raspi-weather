@@ -17,25 +17,29 @@ font2 = ImageFont.truetype(FredokaOne, 14)
 fontBIG = ImageFont.truetype(FredokaOne, 34)
 fontSML = ImageFont.truetype(FredokaOne, 10)
 
-APIKEY = #insert API key from https://www.wunderground.com/member/api-keys after registering an account
-STATION = #insert station ID from https://www.wunderground.com/
-ZIPCODE = #insert Zip Code  
+APIKEY = "fdd56a4a142a4d68956a4a142a2d68df"
+STATION = "IBOLZA20"
+ZIPCODE = "36050"
+TEMPUNIT = "C"
+UNITS = "m"
+LANG = "it-IT"
+LAND = "IT"
 
 #get current conditions from weather underground
-query = "https://api.weather.com/v2/pws/observations/current?stationId="+STATION+"&format=json&units=e&apiKey="+APIKEY
+query = "https://api.weather.com/v2/pws/observations/current?stationId="+STATION+"&format=json&units="+UNITS+"&apiKey="+APIKEY
 url = requests.get(query)
 text = url.text
 x = json.loads(text)
 
 #get 5-day json from weather underground
-wquery = "https://api.weather.com/v3/wx/forecast/daily/5day?postalKey="+ZIPCODE+":US&units=e&language=en-US&format=json&apiKey="+APIKEY
+wquery = "https://api.weather.com/v3/wx/forecast/daily/5day?postalKey="+ZIPCODE+":"+LAND+"&units="+UNITS+"&language="+LANG+"&format=json&apiKey="+APIKEY
 wurl = requests.get(wquery)
 wtext = wurl.text
 y = json.loads(wtext)
 
 #get variables from jsons
 #print(x['observations'][0]['imperial']['temp'])
-currentTemp = x['observations'][0]['imperial']['temp']
+currentTemp = x['observations'][0]['metric']['temp']
 currentDate = x['observations'][0]['obsTimeLocal'].split(' ')[0].split('-',1)[1]
 currentTime = x['observations'][0]['obsTimeLocal'].split(' ')[1]
 calendarDayTemperatureMax = y['calendarDayTemperatureMax']
@@ -53,16 +57,16 @@ if icon is None: #in the evenings the first response in the array is null
 #icon = 41
 
 #make message
-nowTemp = str(currentTemp) + " " + u"\N{DEGREE SIGN}" + "F"
-rangeMessage = str(calendarDayTemperatureMin[0]) + "-" + str(calendarDayTemperatureMax[0]) +" "+ u"\N{DEGREE SIGN}"  +"F"
-futureMessage = str(tomorrowMin) + "-" + str(tomorrowMax) + " " + u"\N{DEGREE SIGN}"  + "F"
+nowTemp = str(currentTemp) + u"\N{DEGREE SIGN}"+TEMPUNIT
+rangeMessage = str(calendarDayTemperatureMin[0]) + "-" + str(calendarDayTemperatureMax[0]) + u"\N{DEGREE SIGN}"+TEMPUNIT
+futureMessage = str(tomorrowMin) + "-" + str(tomorrowMax) + u"\N{DEGREE SIGN}"+TEMPUNIT
 
 #draw the standard stuff
 draw.rectangle((0,0,212,104),inky_display.BLACK)
 
 draw.line((0,0,115,115),inky_display.RED, width=30) 
 draw.text((5, 5), nowTemp, inky_display.WHITE, font)
-draw.text((5, 30), "Today: "+rangeMessage, inky_display.WHITE, font2)
+draw.text((5, 30), "Oggi: "+rangeMessage, inky_display.WHITE, font2)
 draw.text((5, 46), dayOfWeek +": " + futureMessage, inky_display.WHITE, font2)
 #draw.text((5, 75), narrative[0], inky_display.WHITE, font2)
 # Start Variable Font Size for Narrative
@@ -97,7 +101,7 @@ if (icon ==  27) or (icon == 29) or (icon == 31) or (icon == 33):
 	sy = 10
 
 	draw.ellipse((sx, sy, sx+50, sy+50), inky_display.WHITE)
-	if (icon is 31) or (icon is 33): 
+	if (icon == 31) or (icon == 33): 
 		draw.ellipse((sx+10, sy-10, sx+60, sy+40), inky_display.BLACK) 
 
 # small sun
@@ -143,7 +147,7 @@ if (icon == 27) or (icon == 28) or (icon == 38):
 	draw.ellipse((sx+10, sy+5, sx+25, sy+15), inky_display.WHITE)
 
 # small cloud
-if (icon is 33) or (icon is 34):
+if (icon == 33) or (icon == 34):
 	sx = 145
 	sy = 35
 
